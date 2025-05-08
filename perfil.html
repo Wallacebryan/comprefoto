@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Perfil do Fotógrafo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #ffe4f0, #fbc2eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 15px;
+      color: #e91e63;
+    }
+
+    img#foto {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid #ff7eb3;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    img#foto:hover {
+      transform: scale(1.05);
+    }
+
+    p {
+      font-size: 16px;
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+
+    strong {
+      color: #e91e63;
+    }
+
+    /* Estrelas */
+    .rating {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+    }
+
+    .rating span {
+      font-size: 20px;
+      color: gold;
+    }
+
+    /* Galeria */
+    .galeria {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+    }
+
+    .galeria img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .galeria img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Compartilhar */
+    .compartilhar {
+      margin-top: 25px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .compartilhar button {
+      background: linear-gradient(45deg, #ff758c, #ff7eb3);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
+    }
+
+    .compartilhar button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(233, 30, 99, 0.4);
+    }
+
+    /* Contratar */
+    .contratar {
+      margin-top: 20px;
+    }
+
+    .contratar button {
+      background: linear-gradient(45deg, #ec4d91, #e91e63);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(200, 30, 70, 0.3);
+    }
+
+    .contratar button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(200, 30, 70, 0.4);
+    }
+
+    /* Login redes sociais */
+    .login-redes {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .login-redes button.google {
+      background: #db4437;
+    }
+
+    .login-redes button.facebook {
+      background: #3b5998;
+    }
+
+    .login-redes button.instagram {
+      background: linear-gradient(to right, #feda75, #fa7e1e, #d62976);
+    }
+
+    .login-redes button {
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 30px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .login-redes button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <h1 id="nome">Carregando...</h1>
+    <img id="foto" src="" alt="Foto do fotógrafo" />
+
+    <!-- Avaliação -->
+    <div class="rating">
+      <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
+    </div>
+
+    <p><strong>Localização:</strong> <span id="local"></span></p>
+    <p><strong>Preço:</strong> R$<span id="preco"></span></p>
+    <p><strong>Descrição:</strong> <span id="descricao"></span></p>
+
+    <!-- Galeria -->
+    <div class="galeria" id="galeria">
+      <!-- As imagens serão carregadas aqui -->
+    </div>
+
+    <!-- Compartilhar -->
+    <div class="compartilhar">
+      <button onclick="compartilhar('whatsapp')">Compartilhar no WhatsApp</button>
+      <button onclick="compartilhar('facebook')">Compartilhar no Facebook</button>
+    </div>
+
+    <!-- Quero contratar -->
+    <div class="contratar">
+      <button onclick="querContratar()">Quero Contratar</button>
+    </div>
+
+    <!-- Login por redes sociais -->
+    <div class="login-redes">
+      <button class="google" onclick="alert('Login Google')">Entrar com Google</button>
+      <button class="facebook" onclick="alert('Login Facebook')">Entrar com Facebook</button>
+      <button class="instagram" onclick="alert('Login Instagram')">Entrar com Instagram</button>
+    </div>
+
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    fetch(`http://localhost:3000/api/profissionais/${id}`)
+      .then(res => res.json())
+      .then(prof => {
+        document.getElementById("nome").textContent = prof.nome;
+        document.getElementById("local").textContent = prof.localizacao;
+        document.getElementById("preco").textContent = prof.preco;
+        document.getElementById("descricao").textContent = prof.descricao;
+        document.getElementById("foto").src = `http://localhost:3000/uploads/${prof.imagem}`;
+
+        // Carrega galeria (exemplo fixo - substitua conforme backend)
+        const galeria = document.getElementById("galeria");
+        for (let i = 1; i <= 6; i++) {
+          const img = document.createElement("img");
+          img.src = `http://localhost:3000/uploads/exemplo${i}.jpg`;
+          galeria.appendChild(img);
+        }
+      });
+
+    function compartilhar(rede) {
+      const urlAtual = encodeURIComponent(window.location.href);
+      const texto = encodeURIComponent("Veja esse profissional incrível!");
+
+      if (rede === 'whatsapp') {
+        window.open(`https://api.whatsapp.com/send?text= ${texto} - ${urlAtual}`, '_blank');
+      } else if (rede === 'facebook') {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u= ${urlAtual}`, '_blank');
+      }
+    }
+
+    function querContratar() {
+      localStorage.setItem('intencao', `contratar.html?id=${id}`);
+      window.location.href = 'login.html';
+    }
+  </script>
+
+</body>
+</html>
