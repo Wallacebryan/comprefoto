@@ -1,30 +1,267 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fotógrafos MarketPlace</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ffe4f0, #fbc2eb);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      color: #e91e63;
+      margin-bottom: 10px;
+    }
+
+    .search-login {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    input[type="text"],
+    select,
+    input[type="number"] {
+      padding: 8px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      max-width: 200px;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .btn-login,
+    .btn-cadastro {
+      background: linear-gradient(45deg, #ff758c, #ff7eb3);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
+    }
+
+    .btn-login:hover,
+    .btn-cadastro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(233, 30, 99, 0.4);
+    }
+
+    .lista {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #e91e63;
+    }
+
+    .card p {
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+
+    .card a {
+      display: inline-block;
+      background: #e91e63;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .card a:hover {
+      background: #d81b60;
+    }
+
+    .map-container {
+      margin-top: 30px;
+      height: 300px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .pagination button.active {
+      background: #e91e63;
+      color: white;
+    }
+
+    .pagination button:hover {
+      background: #ffe6f0;
+    }
+  </style>
 </head>
 <body>
-  <h1>Fotógrafos & Cinegrafistas</h1>
+
+  <header>
+    <h1>Fotógrafos & Cinegrafistas</h1>
+    <div class="search-login">
+      <div class="search-box">
+        <input type="text" id="busca" placeholder="Buscar por nome ou cidade..." />
+      </div>
+      <div class="filters">
+        <select id="categoria">
+          <option value="">Todas as categorias</option>
+          <option value="Casamento">Casamento</option>
+          <option value="Infantil">Infantil</option>
+          <option value="Moda">Moda</option>
+          <option value="Publicitário">Publicitário</option>
+        </select>
+        <input type="number" id="precoMax" placeholder="Preço máximo" />
+        <select id="ordenacao">
+          <option value="">Ordenar por</option>
+          <option value="preco_asc">Mais barato</option>
+          <option value="avaliacao_desc">Mais bem avaliado</option>
+        </select>
+      </div>
+      <div class="auth-buttons">
+        <a href="login.html"><button class="btn-login">Login</button></a>
+        <a href="cadastro.html"><button class="btn-cadastro">Cadastrar-se</button></a>
+      </div>
+    </div>
+  </header>
+
   <div class="lista"></div>
 
+  <!-- Paginação -->
+  <div class="pagination" id="paginacao"></div>
+
+  <!-- Mapa -->
+  <div class="map-container">
+    <iframe id="mapa"
+      src="https://www.google.com/maps/embed/v1/place?key=SUA_API_KEY_HERE&q=S ão Paulo,Brasil">
+    </iframe>
+  </div>
+
   <script>
+    let profissionais = [];
+    const itemsPerPage = 6;
+    let currentPage = 1;
+
     fetch("http://localhost:3000/api/profissionais")
       .then(res => res.json())
-      .then(profissionais => {
-        const container = document.querySelector(".lista");
-        profissionais.forEach(p => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <h3>${p.nome}</h3>
-            <p>R$ ${p.preco} - ${p.localizacao}</p>
-            <a href="perfil.html?id=${p.id}">Ver Perfil</a>
-          `;
-          container.appendChild(div);
-        });
+      .then(data => {
+        profissionais = data;
+        filtrarProfissionais();
       });
-  </script>
-</body>
-</html>
+
+    function mostrarCards(lista) {
+      const container = document.querySelector(".lista");
+      container.innerHTML = "";
+
+      if (lista.length === 0) {
+        container.innerHTML = "<p>Nenhum fotógrafo encontrado.</p>";
+        return;
+      }
+
+      // Paginação
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const paginatedList = lista.slice(start, end);
+
+      paginatedList.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h3>${p.nome}</h3>
+          <p>R$ ${p.preco} - ${p.localizacao}</p>
+          <a href="perfil.html?id=${p.id}">Ver Perfil</a>
+        `;
+        container.appendChild(div);
+      });
+
+      renderizarPaginas(lista.length);
+    }
+
+    function filtrarProfissionais() {
+      let filtrados = [...profissionais];
+
+      // Busca por nome ou localização
+      const termo = document.getElementById("busca").value.toLowerCase();
+      if (termo) {
+        filtrados = filtrados.filter(p =>
+          p.nome.toLowerCase().includes(termo) || p.localizacao.toLowerCase().includes(termo)
+        );
+      }
+
+      // Filtra por categoria
+      const categoria = document.getElementById("categoria").value;
+      if (categoria) {
+        filtrados = filtrados.filter(p => p.categoria === categoria);
+      }
+
+      // Fil
